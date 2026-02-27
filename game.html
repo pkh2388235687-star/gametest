@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>光影若水 - 探索游戏之美</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+        body {
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+            background-size: 600% 600%;
+            animation: gradientBG 15s ease infinite;
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+        /* 错误提示区域样式 */
+        .error-box {
+            width: 100%;
+            max-width: 500px;
+            padding: 10px 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            background: rgba(255, 0, 0, 0.3);
+            color: #fff;
+            font-size: 0.9rem;
+            display: none;
+            backdrop-filter: blur(5px);
+        }
+        .error-box.show {
+            display: block;
+        }
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .header {
+            text-align: center;
+            margin: 30px 0;
+            animation: fadeInDown 1s ease;
+        }
+        .header h1 {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            text-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+            background: linear-gradient(to right, #fff, #aaddff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            position: relative;
+            display: inline-block;
+        }
+        .header h1::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background: linear-gradient(to right, #fff, #aaddff);
+            border-radius: 2px;
+        }
+        .buttons {
+            display: flex;
+            gap: 30px;
+            margin: 30px 0;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.4);
+            color: white;
+            padding: 15px 30px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        .btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        }
+        .game-container {
+            width: 100%;
+            max-width: 500px;
+            margin: 20px 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .game-info {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+        canvas {
+            border-radius: 10px;
+            background-color: rgba(0, 0, 0, 0.2);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        /* 调整控制按钮区域布局，适配指南展示 */
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+            width: 100%;
+        }
+        .control-btn {
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+        }
+        .control-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        /* 新增：游玩指南样式，贴合整体风格 */
+        .game-guide {
+            margin-top: 15px;
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.85);
+            text-align: center;
+            line-height: 1.6;
+            width: 100%;
+            padding: 8px;
+            border-radius: 8px;
+            background: rgba(0, 0, 0, 0.15);
+            backdrop-filter: blur(5px);
+        }
+        .game-guide span {
+            color: #aaddff;
+            font-weight: 600;
+        }
+        .footer {
+            margin-top: 40px;
+            text-align: center;
+            font-size: 1.1rem;
+            color: rgba(255, 255, 255, 0.7);
+            animation: fadeInUp 1s ease;
+        }
+        /* 补全动画 */
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        /* 响应式适配 */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2.5rem;
+            }
+            .buttons {
+                gap: 15px;
+            }
+            .btn {
+                padding: 12px 25px;
+                font-size: 1rem;
+            }
+            .game-info {
+                font-size: 1rem;
+            }
+            canvas {
+                width: 100%;
+            }
+            .game-guide {
+                font-size: 0.85rem;
+            }
+        }
+        @media (max-width: 480px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            .buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            .btn {
+                width: 80%;
+                margin-bottom: 10px;
+            }
+            .game-info {
+                flex-direction: column;
+                align-items: center;
+                gap: 10px;
+            }
+            .footer {
+                font-size: 0.9rem;
+            }
+            .error-box {
+                font-size: 0.8rem;
+            }
+            .game-guide {
+                font-size: 0.8rem;
+            }
+            .control-btn {
+                padding: 8px 16px;
+                font-size: 0.95rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>光影若水 - 探索游戏之美</h1>
+        </div>
+        
+        <div class="buttons">
+            <button class="btn" id="likeBtn">点赞</button>
+            <button class="btn" id="shareBtn">转发</button>
+        </div>
+        
+        <div class="error-box" id="errorBox"></div>
+        
+        <div class="game-container">
+            <div class="game-info">
+                <div id="score">得分: 0</div>
+                <div id="highScore">最高分: 0</div>
+            </div>
+            <canvas id="gameCanvas" width="400" height="400"></canvas>
+            <div class="controls">
+                <button class="control-btn" id="startBtn">开始游戏</button>
+                <button class="control-btn" id="pauseBtn">暂停游戏</button>
+                <!-- 新增：游玩指南，放在按钮下方，居中显示 -->
+                <div class="game-guide">
+                    游玩指南：<span>电脑端</span>WASD键控制方向 | <span>移动端</span>手指滑动画布控制方向
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            © "光影若水" - 所有权利保留
+        </div>
+    </div>
+    <script>
+        // 全局错误捕获配置
+        const errorBox = document.getElementById('errorBox');
+        window.addEventListener('error', (e) => {
+            showError(`全局错误：${e.message}，位置：${e.filename}第${e.lineno}行`);
+            console.error('【全局JS错误】', e);
+        });
+        window.addEventListener('unhandledrejection', (e) => {
+            showError(`异步错误：${e.reason?.message || e.reason}`);
+            console.error('【Promise异步错误】', e);
+            e.preventDefault();
+        });
+        function showError(msg) {
+            errorBox.textContent = msg;
+            errorBox.classList.add('show');
+            console.error('【游戏运行错误】', msg);
+            setTimeout(() => {
+                errorBox.classList.remove('show');
+            }, 5000);
+        }
+        // 游戏核心代码
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const scoreElement = document.getElementById('score');
+        const highScoreElement = document.getElementById('highScore');
+        const startBtn = document.getElementById('startBtn');
+        const pauseBtn = document.getElementById('pauseBtn');
+        const likeBtn = document.getElementById('likeBtn');
+        const shareBtn = document.getElementById('shareBtn');
+        
+        const GRID_SIZE = 20;
+        const CANVAS_COLS = canvas.width / GRID_SIZE;
+        const CANVAS_ROWS = canvas.height / GRID_SIZE;
+        
+        let snake = [];
+        let food = {};
+        let direction = 'right';
+        let nextDirection = 'right';
+        let score = 0;
+        let highScore = parseInt(localStorage.getItem('highScore')) || 0;
+        let gameRunning = false;
+        let gameSpeed = 100;
+        let gameLoop = null;
+        function initGame() {
+            try {
+                snake = [
+                    {x: 10, y: 10},
+                    {x: 9, y: 10},
+                    {x: 8, y: 10}
+                ];
+                generateFood();
+                score = 0;
+                scoreElement.textContent = `得分: ${score}`;
+                gameRunning = true;
+                gameSpeed = 100;
+                direction = 'right';
+                nextDirection = 'right';
+                if (gameLoop) clearInterval(gameLoop);
+                gameLoop = setInterval(gameUpdate, gameSpeed);
+            } catch (err) {
+                showError(`游戏初始化失败：${err.message}`);
+            }
+        }
+        function gameUpdate() {
+            if (!gameRunning) return;
+            try {
+                direction = nextDirection;
+                const head = {x: snake[0].x, y: snake[0].y};
+                switch(direction) {
+                    case 'up': head.y--; break;
+                    case 'down': head.y++; break;
+                    case 'left': head.x--; break;
+                    case 'right': head.x++; break;
+                }
+                if (head.x === food.x && head.y === food.y) {
+                    score++;
+                    scoreElement.textContent = `得分: ${score}`;
+                    generateFood();
+                    if (gameSpeed > 50) {
+                        gameSpeed -= 2;
+                        clearInterval(gameLoop);
+                        gameLoop = setInterval(gameUpdate, gameSpeed);
+                    }
+                } else {
+                    snake.pop();
+                }
+                if (head.x < 0 || head.x >= CANVAS_COLS || head.y < 0 || head.y >= CANVAS_ROWS) {
+                    gameOver();
+                    return;
+                }
+                for (let i = 1; i < snake.length; i++) {
+                    if (head.x === snake[i].x && head.y === snake[i].y) {
+                        gameOver();
+                        return;
+                    }
+                }
+                snake.unshift(head);
+                draw();
+            } catch (err) {
+                showError(`游戏运行失败：${err.message}`);
+                gameRunning = false;
+            }
+        }
+        function draw() {
+            try {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                for (let i = 0; i < snake.length; i++) {
+                    ctx.fillStyle = i === 0 ? '#4CAF50' : '#8BC34A';
+                    ctx.fillRect(snake[i].x * GRID_SIZE, snake[i].y * GRID_SIZE, GRID_SIZE, GRID_SIZE);
+                    ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
+                    ctx.fillRect(snake[i].x * GRID_SIZE + 5, snake[i].y * GRID_SIZE + 5, 10, 10);
+                }
+                ctx.fillStyle = '#F44336';
+                ctx.beginPath();
+                ctx.arc(food.x * GRID_SIZE + 10, food.y * GRID_SIZE + 10, 10, 0, Math.PI * 2);
+                ctx.fill();
+            } catch (err) {
+                showError(`画面绘制失败：${err.message}`);
+            }
+        }
+        function generateFood() {
+            try {
+                let newFood;
+                let foodOnSnake;
+                do {
+                    foodOnSnake = false;
+                    newFood = {
+                        x: Math.floor(Math.random() * CANVAS_COLS),
+                        y: Math.floor(Math.random() * CANVAS_ROWS)
+                    };
+                    for (let i = 0; i < snake.length; i++) {
+                        if (snake[i].x === newFood.x && snake[i].y === newFood.y) {
+                            foodOnSnake = true;
+                            break;
+                        }
+                    }
+                } while (foodOnSnake);
+                food = newFood;
+            } catch (err) {
+                showError(`食物生成失败：${err.message}`);
+            }
+        }
+        function gameOver() {
+            try {
+                gameRunning = false;
+                clearInterval(gameLoop);
+                if (score > highScore) {
+                    highScore = score;
+                    localStorage.setItem('highScore', highScore);
+                    highScoreElement.textContent = `最高分: ${highScore}`;
+                }
+                alert(`游戏结束！你的得分是: ${score}\n本次最高分: ${highScore}`);
+            } catch (err) {
+                showError(`游戏结束处理失败：${err.message}`);
+            }
+        }
+        // WASD+方向键双控（兼容大小写）
+        document.addEventListener('keydown', (e) => {
+            switch(e.key) {
+                case 'ArrowUp':
+                case 'w':
+                case 'W':
+                    if (direction !== 'down') nextDirection = 'up';
+                    break;
+                case 'ArrowDown':
+                case 's':
+                case 'S':
+                    if (direction !== 'up') nextDirection = 'down';
+                    break;
+                case 'ArrowLeft':
+                case 'a':
+                case 'A':
+                    if (direction !== 'right') nextDirection = 'left';
+                    break;
+                case 'ArrowRight':
+                case 'd':
+                case 'D':
+                    if (direction !== 'left') nextDirection = 'right';
+                    break;
+            }
+        });
+        // 按钮事件
+        startBtn.addEventListener('click', () => {
+            if (!gameRunning) {
+                initGame();
+                startBtn.textContent = '重新开始';
+            } else {
+                initGame();
+            }
+        });
+        pauseBtn.addEventListener('click', () => {
+            gameRunning = !gameRunning;
+            pauseBtn.textContent = gameRunning ? '暂停游戏' : '继续游戏';
+            if (!gameRunning) {
+                clearInterval(gameLoop);
+            } else {
+                gameLoop = setInterval(gameUpdate, gameSpeed);
+            }
+        });
+        likeBtn.addEventListener('click', () => {
+            if (likeBtn.innerHTML !== '❤️ 已点赞') {
+                likeBtn.innerHTML = '❤️ 已点赞';
+                likeBtn.style.background = 'rgba(255, 0, 0, 0.3)';
+                alert('感谢您的支持！');
+            } else {
+                likeBtn.innerHTML = '点赞';
+                likeBtn.style.background = 'rgba(255, 255, 255, 0.2)';
+            }
+        });
+        shareBtn.addEventListener('click', async () => {
+            try {
+                if (navigator.share) {
+                    await navigator.share({
+                        title: '光影若水 - 探索游戏之美',
+                        text: '一起来玩这个有趣的贪吃蛇游戏吧！',
+                        url: window.location.href
+                    });
+                    alert('分享成功！');
+                } else {
+                    await navigator.clipboard.writeText(window.location.href);
+                    alert('分享链接已复制到剪贴板，可手动转发！');
+                }
+            } catch (err) {
+                showError(`转发成功，by@光影若水`);
+            }
+        });
+        // 页面初始化
+        document.addEventListener('DOMContentLoaded', () => {
+            try {
+                localStorage.setItem('highScore', 0);
+                highScore = 0;
+                highScoreElement.textContent = `最高分: ${highScore}`;
+                let touchStartX = 0;
+                let touchStartY = 0;
+                canvas.addEventListener('touchstart', (e) => {
+                    touchStartX = e.touches[0].clientX;
+                    touchStartY = e.touches[0].clientY;
+                    e.preventDefault();
+                });
+                canvas.addEventListener('touchmove', (e) => e.preventDefault());
+                canvas.addEventListener('touchend', (e) => {
+                    const touchEndX = e.changedTouches[0].clientX;
+                    const touchEndY = e.changedTouches[0].clientY;
+                    const dx = touchEndX - touchStartX;
+                    const dy = touchEndY - touchStartY;
+                    if (Math.abs(dx) > Math.abs(dy)) {
+                        if (dx > 0 && direction !== 'left') nextDirection = 'right';
+                        else if (dx < 0 && direction !== 'right') nextDirection = 'left';
+                    } else {
+                        if (dy > 0 && direction !== 'up') nextDirection = 'down';
+                        else if (dy < 0 && direction !== 'down') nextDirection = 'up';
+                    }
+                    e.preventDefault();
+                });
+                const elements = document.querySelectorAll('.btn, .control-btn, canvas, .game-info, .game-guide');
+                elements.forEach((element, index) => {
+                    element.style.opacity = 0;
+                    element.style.transform = 'translateY(20px)';
+                    element.style.transition = 'all 0.3s ease';
+                    setTimeout(() => {
+                        element.style.opacity = 1;
+                        element.style.transform = 'translateY(0)';
+                    }, 300 + index * 100);
+                });
+            } catch (err) {
+                showError(`页面初始化失败：${err.message}`);
+            }
+        });
+    </script>
+</body>
+</html>
