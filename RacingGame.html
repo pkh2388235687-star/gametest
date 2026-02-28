@@ -1,0 +1,1481 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta property="og:title" content="PAN-探索游戏之美 - 赛车像素游戏">
+    <meta property="og:description" content="超好玩的赛车像素游戏，三车道极速狂飙，快来挑战最高分！">
+    <meta property="og:type" content="game">
+    <meta property="og:url" content="">
+    <meta property="og:image" content="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjQwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48cmFkaWFsR3JhZGllbnQgaWQ9ImJnIiBjeD0iNTAlIiBjeT0iNTAlIiByPSI1MCUiPjxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiM2NjdlZWEiLz48c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiM3NjRiYTIiLz48L3JhZGlhbEdyYWRpZW50PjwvZGVmcz48cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjQwMCIgZmlsbD0idXJsKCNiZykiLz48cmVjdCB4PSIxODAiIHk9IjMwMCIgd2lkdGg9IjQwIiBoZWlnaHQ9IjYwIiBmaWxsPSIjRkZENzAwIiByeD0iNSIvPjxyZWN0IHg9IjE4NSIgeT0iMzEwIiB3aWR0aD0iMzAiIGhlaWdodD0iNDAiIGZpbGw9IiNGRkE1MDAiIHJ4PSIzIi8+PC9zdmc+">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="PAN-探索游戏之美 - 赛车像素游戏">
+    <meta name="twitter:description" content="超好玩的赛车像素游戏，三车道极速狂飙，快来挑战最高分！">
+    <title>PAN-探索游戏之美</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* 赛车主题背景特效 */
+        .racing-bg-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 0;
+            pointer-events: none;
+            background: linear-gradient(180deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+        }
+
+        /* 赛道线条 */
+        .racing-line {
+            position: absolute;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(180deg, 
+                transparent 0%, 
+                rgba(255, 255, 255, 0.8) 10%, 
+                rgba(255, 255, 255, 0.8) 90%, 
+                transparent 100%);
+            animation: racingLineMove 2s linear infinite;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.5), 0 0 40px rgba(0, 255, 255, 0.3);
+        }
+
+        @keyframes racingLineMove {
+            0% {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh);
+                opacity: 0;
+            }
+        }
+
+        /* 速度线 */
+        .speed-line {
+            position: absolute;
+            width: 2px;
+            height: 80px;
+            background: linear-gradient(180deg, 
+                transparent 0%, 
+                rgba(255, 255, 255, 0.9) 20%, 
+                rgba(0, 255, 255, 0.8) 50%,
+                rgba(255, 0, 128, 0.6) 80%,
+                transparent 100%);
+            animation: speedLineMove 0.8s linear infinite;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+        }
+
+        @keyframes speedLineMove {
+            0% {
+                transform: translateY(-100px) scaleY(0.5);
+                opacity: 0;
+            }
+            20% {
+                opacity: 1;
+            }
+            80% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(calc(100vh + 100px)) scaleY(1.5);
+                opacity: 0;
+            }
+        }
+
+        /* 轮胎印 */
+        .tire-mark {
+            position: absolute;
+            width: 30px;
+            height: 60px;
+            background: repeating-linear-gradient(
+                90deg,
+                rgba(50, 50, 50, 0.3) 0px,
+                rgba(50, 50, 50, 0.3) 3px,
+                transparent 3px,
+                transparent 6px
+            );
+            border-radius: 15px;
+            animation: tireMarkMove 3s linear infinite;
+            filter: blur(1px);
+        }
+
+        @keyframes tireMarkMove {
+            0% {
+                transform: translateY(-100px) rotate(-5deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.6;
+            }
+            90% {
+                opacity: 0.6;
+            }
+            100% {
+                transform: translateY(calc(100vh + 100px)) rotate(5deg);
+                opacity: 0;
+            }
+        }
+
+        /* 霓虹光效 */
+        .neon-glow {
+            position: absolute;
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: radial-gradient(circle, 
+                rgba(0, 255, 255, 0.4) 0%, 
+                rgba(255, 0, 128, 0.2) 40%, 
+                transparent 70%);
+            animation: neonPulse 4s ease-in-out infinite;
+            filter: blur(20px);
+        }
+
+        @keyframes neonPulse {
+            0%, 100% {
+                transform: scale(1) rotate(0deg);
+                opacity: 0.5;
+            }
+            50% {
+                transform: scale(1.3) rotate(180deg);
+                opacity: 0.8;
+            }
+        }
+
+        /* 网格地面效果 */
+        .grid-floor {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 50%;
+            background: 
+                linear-gradient(90deg, rgba(0, 255, 255, 0.1) 1px, transparent 1px),
+                linear-gradient(0deg, rgba(0, 255, 255, 0.1) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: gridMove 2s linear infinite;
+            transform: perspective(500px) rotateX(60deg);
+            transform-origin: bottom;
+            opacity: 0.3;
+        }
+
+        @keyframes gridMove {
+            0% {
+                background-position: 0 0;
+            }
+            100% {
+                background-position: 0 50px;
+            }
+        }
+
+        /* 赛车仪表盘元素 */
+        .dashboard-element {
+            position: absolute;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            color: rgba(0, 255, 255, 0.6);
+            text-shadow: 0 0 10px rgba(0, 255, 255, 0.8);
+            animation: dashboardFloat 5s ease-in-out infinite;
+        }
+
+        @keyframes dashboardFloat {
+            0%, 100% {
+                transform: translateY(0);
+                opacity: 0.4;
+            }
+            50% {
+                transform: translateY(-20px);
+                opacity: 0.8;
+            }
+        }
+
+        .content {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            animation: fadeInDown 1s ease-out;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .title {
+            font-size: clamp(1.5rem, 4vw, 2.5rem);
+            font-weight: bold;
+            color: #fff;
+            margin-bottom: 20px;
+            letter-spacing: 2px;
+            position: relative;
+            display: inline-block;
+            background: linear-gradient(90deg, #fff, #ffeaa7, #74b9ff, #fff);
+            background-size: 300% 100%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: titleShine 3s linear infinite, titleGlow 2s ease-in-out infinite alternate;
+            filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.5));
+        }
+
+        @keyframes titleShine {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 300% 50%; }
+        }
+
+        @keyframes titleGlow {
+            0% {
+                filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.5)) drop-shadow(0 0 40px rgba(116, 185, 255, 0.3));
+            }
+            50% {
+                filter: drop-shadow(0 0 30px rgba(255, 255, 255, 0.8)) drop-shadow(0 0 60px rgba(116, 185, 255, 0.6)) drop-shadow(0 0 80px rgba(255, 234, 167, 0.4));
+            }
+            100% {
+                filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.5)) drop-shadow(0 0 40px rgba(255, 107, 107, 0.3));
+            }
+        }
+
+        .title::before {
+            content: 'PAN-探索游戏之美';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.8), transparent);
+            background-size: 200% 100%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: titleShine 2s linear infinite;
+            filter: blur(2px);
+        }
+
+        .buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+            animation: fadeInUp 1s ease-out 0.3s both;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .btn {
+            padding: 12px 30px;
+            font-size: 1rem;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-like {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a5a);
+            color: white;
+        }
+
+        .btn-like:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
+        }
+
+        .btn-like:active {
+            transform: translateY(-1px);
+        }
+
+        .btn-like.liked {
+            background: linear-gradient(135deg, #ff4757, #ff3838);
+            box-shadow: 0 6px 20px rgba(255, 71, 87, 0.5);
+        }
+
+        .btn-share {
+            background: linear-gradient(135deg, #4ecdc4, #44a08d);
+            color: white;
+        }
+
+        .btn-share:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(78, 205, 196, 0.4);
+        }
+
+        .btn-share:active {
+            transform: translateY(-1px);
+        }
+
+        .btn-share.shared {
+            background: linear-gradient(135deg, #00b894, #00a085);
+            box-shadow: 0 6px 20px rgba(0, 184, 148, 0.5);
+        }
+
+        .btn-icon {
+            font-size: 1.2rem;
+        }
+
+        .btn-count {
+            background: rgba(255, 255, 255, 0.3);
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 0.9rem;
+        }
+
+        .btn-status {
+            font-size: 0.8rem;
+            opacity: 0;
+            position: absolute;
+            bottom: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            white-space: nowrap;
+            transition: all 0.3s ease;
+            color: #fff;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 4px 10px;
+            border-radius: 15px;
+        }
+
+        .btn-status.show {
+            opacity: 1;
+            bottom: -30px;
+        }
+
+        .share-notification {
+            position: fixed;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: rgba(0, 0, 0, 0.8);
+            color: #fff;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            z-index: 1000;
+            opacity: 0;
+            transition: all 0.5s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .share-notification.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .share-notification.success {
+            background: linear-gradient(135deg, #00b894, #00a085);
+        }
+
+        .share-notification.error {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a5a);
+        }
+
+        @keyframes heartBeat {
+            0% { transform: scale(1); }
+            25% { transform: scale(1.3); }
+            50% { transform: scale(1); }
+            75% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 107, 107, 0.7); }
+            70% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(255, 107, 107, 0); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 107, 107, 0); }
+        }
+
+        .btn-like.liked .btn-icon {
+            animation: heartBeat 0.6s ease;
+        }
+
+        .btn-like.liked {
+            animation: pulse 1s ease;
+        }
+
+        .game-container {
+            margin: 30px 0;
+            animation: fadeInUp 1s ease-out 0.6s both;
+        }
+
+        .game-title {
+            color: #fff;
+            font-size: clamp(1.2rem, 3vw, 1.8rem);
+            margin-bottom: 15px;
+            text-align: center;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .game-wrapper {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            max-width: 400px;
+            width: 100%;
+        }
+
+        #gameCanvas {
+            display: block;
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            border-radius: 10px;
+            background: #2d3436;
+            image-rendering: pixelated;
+        }
+
+        .game-info {
+            text-align: center;
+            margin-top: 15px;
+            color: #333;
+        }
+
+        .game-score {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #764ba2;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .score-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .score-label {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .score-value {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #764ba2;
+        }
+
+        .hearts-container {
+            display: flex;
+            justify-content: center;
+            gap: 5px;
+            margin-bottom: 10px;
+        }
+
+        .heart {
+            font-size: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .heart.active {
+            color: #ff4757;
+            text-shadow: 0 0 5px rgba(255, 71, 87, 0.5);
+        }
+
+        .heart.lost {
+            color: #ccc;
+            opacity: 0.5;
+        }
+
+        .game-instructions {
+            font-size: 0.85rem;
+            color: #666;
+            line-height: 1.6;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+
+        .game-instructions strong {
+            color: #667eea;
+        }
+
+        .footer {
+            margin-top: auto;
+            padding: 20px;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.9rem;
+            animation: fadeInUp 1s ease-out 0.9s both;
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                padding: 15px;
+            }
+
+            .title {
+                margin-bottom: 15px;
+            }
+
+            .buttons {
+                gap: 15px;
+            }
+
+            .btn {
+                padding: 10px 20px;
+                font-size: 0.9rem;
+            }
+
+            .game-container {
+                margin: 20px 0;
+            }
+
+            .game-wrapper {
+                padding: 15px;
+            }
+
+            .game-score {
+                font-size: 1rem;
+            }
+
+            .share-notification {
+                bottom: 60px;
+                padding: 10px 18px;
+                font-size: 0.85rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .title {
+                font-size: 1.5rem;
+            }
+
+            .buttons {
+                gap: 10px;
+            }
+
+            .btn {
+                padding: 8px 16px;
+                font-size: 0.85rem;
+            }
+
+            .game-instructions {
+                font-size: 0.75rem;
+            }
+
+            .heart {
+                font-size: 1.3rem;
+            }
+
+            .share-notification {
+                bottom: 50px;
+                padding: 8px 15px;
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="racing-bg-container" id="racingBgContainer">
+        <div class="grid-floor"></div>
+    </div>
+    
+    <div class="content">
+        <div class="header">
+            <h1 class="title">PAN-探索游戏之美</h1>
+            <div class="buttons">
+                <button class="btn btn-like" id="likeBtn" onclick="handleLike()">
+                    <span class="btn-icon" id="likeIcon">🤍</span>
+                    <span id="likeText">点赞</span>
+                    <span class="btn-count" id="likeCount">0</span>
+                    <span class="btn-status" id="likeStatus">已点赞</span>
+                </button>
+                <button class="btn btn-share" id="shareBtn" onclick="handleShare()">
+                    <span class="btn-icon" id="shareIcon">📤</span>
+                    <span id="shareText">转发</span>
+                    <span class="btn-count" id="shareCount">0</span>
+                    <span class="btn-status" id="shareStatus">已转发</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="game-container">
+            <h2 class="game-title">🏎️ 赛车像素游戏</h2>
+            <div class="game-wrapper">
+                <canvas id="gameCanvas" width="400" height="400"></canvas>
+                <div class="game-info">
+                    <div class="hearts-container" id="heartsContainer">
+                        <span class="heart active">❤️</span>
+                        <span class="heart active">❤️</span>
+                        <span class="heart active">❤️</span>
+                    </div>
+                    <div class="game-score">
+                        <div class="score-item">
+                            <span class="score-label">得分:</span>
+                            <span class="score-value" id="score">0</span>
+                        </div>
+                        <div class="score-item">
+                            <span class="score-label">最高分:</span>
+                            <span class="score-value" id="highScore">0</span>
+                        </div>
+                    </div>
+                    <div class="game-instructions">
+                        <strong>电脑端:</strong> 按A/D键或←→键控制左右移动<br>
+                        <strong>手机端:</strong> 左右滑动切换赛道<br>
+                        <strong>目标:</strong> 躲避三车道的车辆，速度会越来越快！<br>
+                        <strong>提示:</strong> 你有3颗红心，小心驾驶！
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            © "PAN" - 所有权利保留
+        </div>
+    </div>
+
+    <div class="share-notification" id="shareNotification"></div>
+
+    <script>
+        let likeCount = 0;
+        let shareCount = 0;
+        let liked = false;
+        let shared = false;
+
+        function showNotification(message, type = 'success') {
+            const notification = document.getElementById('shareNotification');
+            notification.classList.remove('show');
+            notification.textContent = message;
+            notification.className = `share-notification ${type}`;
+            void notification.offsetWidth;
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        function handleLike() {
+            const btn = document.getElementById('likeBtn');
+            const icon = document.getElementById('likeIcon');
+            const text = document.getElementById('likeText');
+            const status = document.getElementById('likeStatus');
+            
+            if (!liked) {
+                liked = true;
+                likeCount++;
+                document.getElementById('likeCount').textContent = likeCount;
+                
+                btn.classList.add('liked');
+                icon.textContent = '❤️';
+                text.textContent = '已点赞';
+                status.classList.add('show');
+                
+                btn.style.transform = 'scale(1.1)';
+                setTimeout(() => {
+                    btn.style.transform = 'scale(1)';
+                }, 200);
+            }
+        }
+
+        function handleShare() {
+            if (shared) {
+                showNotification('你已经分享过啦 😊', 'success');
+                return;
+            }
+
+            const btn = document.getElementById('shareBtn');
+            const icon = document.getElementById('shareIcon');
+            const text = document.getElementById('shareText');
+            const status = document.getElementById('shareStatus');
+
+            const shareUrl = window.location.href;
+            const shareTitle = 'PAN-探索游戏之美 - 赛车像素游戏';
+            const shareDesc = '超好玩的赛车像素游戏，三车道极速狂飙，快来挑战最高分！';
+
+            shared = true;
+            shareCount++;
+            document.getElementById('shareCount').textContent = shareCount;
+            btn.classList.add('shared');
+            icon.textContent = '✅';
+            text.textContent = '已转发';
+            status.classList.add('show');
+            btn.style.transform = 'scale(1.1)';
+            setTimeout(() => {
+                btn.style.transform = 'scale(1)';
+            }, 200);
+
+            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+            if (isMobile && navigator.share) {
+                const shareData = {
+                    title: shareTitle,
+                    text: shareDesc,
+                    url: shareUrl
+                };
+
+                navigator.share(shareData)
+                    .then(() => {
+                        showNotification('分享成功！🎉 by @PAN', 'success');
+                    })
+                    .catch((error) => {
+                        if (error.name !== 'AbortError') {
+                            console.log('原生分享失败:', error);
+                            showNotification('分享失败，已为你复制链接', 'error');
+                            copyLinkToClipboard(shareUrl);
+                        } else {
+                            showNotification('你取消了分享，已为你复制链接', 'success');
+                            copyLinkToClipboard(shareUrl);
+                        }
+                    });
+            } else {
+                copyLinkToClipboard(shareUrl);
+                showNotification('已为你复制游戏链接，快去分享吧！', 'success');
+            }
+        }
+
+        function copyLinkToClipboard(url) {
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(url)
+                    .then(() => {
+                        showNotification('链接复制成功 ✅', 'success');
+                    })
+                    .catch(() => {
+                        fallbackCopy(url);
+                    });
+            } else {
+                fallbackCopy(url);
+            }
+        }
+
+        function fallbackCopy(text) {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            textarea.style.position = 'fixed';
+            textarea.style.left = '-9999px';
+            document.body.appendChild(textarea);
+            
+            textarea.select();
+            textarea.setSelectionRange(0, 99999);
+            
+            try {
+                document.execCommand('copy');
+                showNotification('链接复制成功 ✅', 'success');
+            } catch (err) {
+                const copied = prompt('无法自动复制，请手动复制链接:', text);
+                if (copied) {
+                    showNotification('链接复制成功 ✅', 'success');
+                } else {
+                    showNotification('链接复制失败 😥', 'error');
+                }
+            }
+            
+            document.body.removeChild(textarea);
+        }
+
+        function createRacingBackground() {
+            const container = document.getElementById('racingBgContainer');
+            
+            // 创建赛道线条
+            const lineCount = 5;
+            for (let i = 0; i < lineCount; i++) {
+                const line = document.createElement('div');
+                line.className = 'racing-line';
+                line.style.left = (15 + i * 17) + '%';
+                line.style.animationDuration = (1.5 + Math.random() * 1) + 's';
+                line.style.animationDelay = (i * 0.3) + 's';
+                container.appendChild(line);
+            }
+            
+            // 创建速度线
+            const speedLineCount = 30;
+            for (let i = 0; i < speedLineCount; i++) {
+                const line = document.createElement('div');
+                line.className = 'speed-line';
+                line.style.left = Math.random() * 100 + '%';
+                line.style.animationDuration = (0.5 + Math.random() * 0.5) + 's';
+                line.style.animationDelay = Math.random() * 2 + 's';
+                line.style.height = (50 + Math.random() * 100) + 'px';
+                container.appendChild(line);
+            }
+            
+            // 创建轮胎印
+            const tireMarkCount = 8;
+            for (let i = 0; i < tireMarkCount; i++) {
+                const mark = document.createElement('div');
+                mark.className = 'tire-mark';
+                mark.style.left = (10 + Math.random() * 80) + '%';
+                mark.style.animationDuration = (2 + Math.random() * 2) + 's';
+                mark.style.animationDelay = Math.random() * 3 + 's';
+                container.appendChild(mark);
+            }
+            
+            // 创建霓虹光效
+            const neonCount = 4;
+            for (let i = 0; i < neonCount; i++) {
+                const neon = document.createElement('div');
+                neon.className = 'neon-glow';
+                neon.style.left = Math.random() * 80 + '%';
+                neon.style.top = Math.random() * 80 + '%';
+                neon.style.animationDuration = (3 + Math.random() * 2) + 's';
+                neon.style.animationDelay = (i * 1) + 's';
+                container.appendChild(neon);
+            }
+            
+            // 创建仪表盘元素
+            const dashboardData = ['RPM: 8000', 'SPEED: 280', 'GEAR: 5', 'NITRO: 85%', 'LAP: 2/3'];
+            for (let i = 0; i < dashboardData.length; i++) {
+                const elem = document.createElement('div');
+                elem.className = 'dashboard-element';
+                elem.textContent = dashboardData[i];
+                elem.style.left = (5 + Math.random() * 85) + '%';
+                elem.style.top = (10 + Math.random() * 70) + '%';
+                elem.style.animationDelay = (i * 0.5) + 's';
+                container.appendChild(elem);
+            }
+        }
+
+        createRacingBackground();
+
+        // 赛车游戏代码
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const scoreElement = document.getElementById('score');
+        const highScoreElement = document.getElementById('highScore');
+        const heartsContainer = document.getElementById('heartsContainer');
+
+        // 游戏配置
+        const LANE_COUNT = 3;
+        const LANE_WIDTH = canvas.width / LANE_COUNT;
+        const CAR_WIDTH = 40;
+        const CAR_HEIGHT = 60;
+        const ENEMY_CAR_WIDTH = 40;
+        const ENEMY_CAR_HEIGHT = 60;
+        
+        // 游戏状态
+        let playerLane = 1; // 0, 1, 2 左中右
+        let targetLane = 1; // 目标车道（用于平滑过渡）
+        let playerX = 0; // 实际X坐标（用于平滑移动）
+        let isDrifting = false; // 是否正在漂移
+        let driftDirection = 0; // 漂移方向
+        let score = 0;
+        let highScore = 0;
+        let lives = 3;
+        let gameOver = false;
+        let gameStarted = false;
+        let animationId;
+        let invincible = false;
+        let invincibleTimer = null;
+        
+        // 尾气粒子数组
+        let exhaustParticles = [];
+        
+        // 速度配置
+        let baseSpeed = 3;
+        let currentSpeed = baseSpeed;
+        const SPEED_INCREMENT = 0.2;
+        const SPEED_INCREMENT_STEP = 10;
+        const MAX_SPEED = 12;
+        
+        // 敌车数组
+        let enemyCars = [];
+        let enemySpawnTimer = 0;
+        let enemySpawnInterval = 90;
+        
+        // 道路偏移（用于滚动效果）
+        let roadOffset = 0;
+
+        function resetGame() {
+            playerLane = 1;
+            targetLane = 1;
+            playerX = 1 * LANE_WIDTH + (LANE_WIDTH - CAR_WIDTH) / 2;
+            isDrifting = false;
+            driftDirection = 0;
+            score = 0;
+            lives = 3;
+            gameOver = false;
+            gameStarted = false;
+            invincible = false;
+            currentSpeed = baseSpeed;
+            enemyCars = [];
+            exhaustParticles = [];
+            enemySpawnTimer = 0;
+            roadOffset = 0;
+            scoreElement.textContent = score;
+            updateHearts();
+        }
+
+        function updateHearts() {
+            const hearts = heartsContainer.querySelectorAll('.heart');
+            hearts.forEach((heart, index) => {
+                if (index < lives) {
+                    heart.classList.add('active');
+                    heart.classList.remove('lost');
+                } else {
+                    heart.classList.remove('active');
+                    heart.classList.add('lost');
+                }
+            });
+        }
+
+        function drawRoad() {
+            // 绘制道路背景
+            ctx.fillStyle = '#2d3436';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // 绘制车道线
+            ctx.strokeStyle = '#636e72';
+            ctx.lineWidth = 4;
+            ctx.setLineDash([30, 20]);
+            
+            for (let i = 1; i < LANE_COUNT; i++) {
+                const x = i * LANE_WIDTH;
+                ctx.beginPath();
+                ctx.moveTo(x, (roadOffset % 50) - 50);
+                ctx.lineTo(x, canvas.height);
+                ctx.stroke();
+            }
+            
+            ctx.setLineDash([]);
+            
+            // 绘制路边线
+            ctx.strokeStyle = '#dfe6e9';
+            ctx.lineWidth = 6;
+            ctx.beginPath();
+            ctx.moveTo(2, 0);
+            ctx.lineTo(2, canvas.height);
+            ctx.moveTo(canvas.width - 2, 0);
+            ctx.lineTo(canvas.width - 2, canvas.height);
+            ctx.stroke();
+        }
+
+        function drawPlayerCar() {
+            const targetX = targetLane * LANE_WIDTH + (LANE_WIDTH - CAR_WIDTH) / 2;
+            const currentLaneX = playerLane * LANE_WIDTH + (LANE_WIDTH - CAR_WIDTH) / 2;
+            
+            // 平滑移动
+            const moveSpeed = 0.15;
+            const diff = targetX - playerX;
+            
+            if (Math.abs(diff) > 1) {
+                playerX += diff * moveSpeed;
+                isDrifting = true;
+                driftDirection = diff > 0 ? 1 : -1;
+            } else {
+                playerX = targetX;
+                playerLane = targetLane;
+                isDrifting = false;
+                driftDirection = 0;
+            }
+            
+            const x = playerX;
+            const y = canvas.height - CAR_HEIGHT - 20;
+            
+            ctx.save();
+            
+            if (invincible) {
+                ctx.globalAlpha = 0.5 + Math.sin(Date.now() / 100) * 0.3;
+            }
+            
+            // 漂移时的倾斜效果
+            if (isDrifting) {
+                const tiltAngle = driftDirection * 0.15;
+                ctx.translate(x + CAR_WIDTH / 2, y + CAR_HEIGHT / 2);
+                ctx.rotate(tiltAngle);
+                ctx.translate(-(x + CAR_WIDTH / 2), -(y + CAR_HEIGHT / 2));
+                
+                // 绘制漂移轨迹
+                drawDriftTrail(x, y, driftDirection);
+            }
+            
+            // 绘制尾气
+            updateAndDrawExhaust(x, y);
+            
+            // 车身阴影
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
+            ctx.fillRect(x + 5, y + 5, CAR_WIDTH, CAR_HEIGHT);
+            
+            // 车身
+            ctx.fillStyle = '#0984e3';
+            ctx.fillRect(x, y, CAR_WIDTH, CAR_HEIGHT);
+            
+            // 车身高光
+            ctx.fillStyle = '#74b9ff';
+            ctx.fillRect(x + 2, y + 2, CAR_WIDTH - 4, 8);
+            
+            // 车顶
+            ctx.fillStyle = '#3498db';
+            ctx.fillRect(x + 5, y + 15, CAR_WIDTH - 10, CAR_HEIGHT - 30);
+            
+            // 车窗
+            ctx.fillStyle = '#2c3e50';
+            ctx.fillRect(x + 8, y + 20, CAR_WIDTH - 16, CAR_HEIGHT - 40);
+            
+            // 车窗反光
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+            ctx.fillRect(x + 10, y + 22, 8, CAR_HEIGHT - 44);
+            
+            // 车灯
+            ctx.fillStyle = '#ffeaa7';
+            ctx.fillRect(x + 3, y + CAR_HEIGHT - 8, 10, 6);
+            ctx.fillRect(x + CAR_WIDTH - 13, y + CAR_HEIGHT - 8, 10, 6);
+            
+            // 车尾灯
+            ctx.fillStyle = '#d63031';
+            ctx.fillRect(x + 3, y + 2, 8, 4);
+            ctx.fillRect(x + CAR_WIDTH - 11, y + 2, 8, 4);
+            
+            // 尾灯发光效果
+            ctx.fillStyle = 'rgba(214, 48, 49, 0.5)';
+            ctx.fillRect(x + 1, y, 12, 8);
+            ctx.fillRect(x + CAR_WIDTH - 13, y, 12, 8);
+            
+            // 轮子
+            ctx.fillStyle = '#2d3436';
+            ctx.fillRect(x - 3, y + 10, 6, 12);
+            ctx.fillRect(x + CAR_WIDTH - 3, y + 10, 6, 12);
+            ctx.fillRect(x - 3, y + CAR_HEIGHT - 22, 6, 12);
+            ctx.fillRect(x + CAR_WIDTH - 3, y + CAR_HEIGHT - 22, 6, 12);
+            
+            // 轮毂
+            ctx.fillStyle = '#b2bec3';
+            ctx.fillRect(x - 2, y + 12, 4, 8);
+            ctx.fillRect(x + CAR_WIDTH - 2, y + 12, 4, 8);
+            ctx.fillRect(x - 2, y + CAR_HEIGHT - 20, 4, 8);
+            ctx.fillRect(x + CAR_WIDTH - 2, y + CAR_HEIGHT - 20, 4, 8);
+            
+            ctx.restore();
+        }
+        
+        // 绘制漂移轨迹
+        function drawDriftTrail(x, y, direction) {
+            const trailCount = 5;
+            for (let i = 0; i < trailCount; i++) {
+                const alpha = 0.3 - i * 0.05;
+                const offsetX = -direction * (i + 1) * 8;
+                const offsetY = 0;
+                
+                ctx.fillStyle = `rgba(200, 200, 200, ${alpha})`;
+                ctx.fillRect(x + offsetX, y + CAR_HEIGHT - 15 + offsetY, CAR_WIDTH, 4);
+            }
+        }
+        
+        // 更新和绘制尾气
+        function updateAndDrawExhaust(carX, carY) {
+            // 添加新粒子
+            if (gameStarted && !gameOver) {
+                const particleCount = Math.floor(currentSpeed / 2) + 1;
+                for (let i = 0; i < particleCount; i++) {
+                    exhaustParticles.push({
+                        x: carX + CAR_WIDTH / 2 + (Math.random() - 0.5) * 10,
+                        y: carY + CAR_HEIGHT - 5,
+                        vx: (Math.random() - 0.5) * 2,
+                        vy: currentSpeed + Math.random() * 2,
+                        size: Math.random() * 8 + 4,
+                        alpha: 0.6 + Math.random() * 0.3,
+                        color: Math.random() > 0.7 ? '#ff7675' : '#636e72'
+                    });
+                }
+            }
+            
+            // 更新和绘制粒子
+            for (let i = exhaustParticles.length - 1; i >= 0; i--) {
+                const p = exhaustParticles[i];
+                
+                p.x += p.vx;
+                p.y += p.vy;
+                p.size += 0.3;
+                p.alpha -= 0.02;
+                
+                if (p.alpha <= 0) {
+                    exhaustParticles.splice(i, 1);
+                    continue;
+                }
+                
+                ctx.save();
+                ctx.globalAlpha = p.alpha;
+                
+                // 绘制粒子
+                const gradient = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.size);
+                gradient.addColorStop(0, p.color);
+                gradient.addColorStop(1, 'transparent');
+                ctx.fillStyle = gradient;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                ctx.fill();
+                
+                ctx.restore();
+            }
+        }
+
+        function drawEnemyCar(car) {
+            const colors = ['#e17055', '#fdcb6e', '#6c5ce7', '#00b894', '#e84393'];
+            const color = colors[car.colorIndex % colors.length];
+            
+            ctx.save();
+            
+            // 车身
+            ctx.fillStyle = color;
+            ctx.fillRect(car.x, car.y, ENEMY_CAR_WIDTH, ENEMY_CAR_HEIGHT);
+            
+            // 车顶
+            ctx.fillStyle = color;
+            ctx.globalAlpha = 0.8;
+            ctx.fillRect(car.x + 5, car.y + 10, ENEMY_CAR_WIDTH - 10, ENEMY_CAR_HEIGHT - 25);
+            ctx.globalAlpha = 1;
+            
+            // 车窗
+            ctx.fillStyle = '#2d3436';
+            ctx.fillRect(car.x + 8, car.y + 15, ENEMY_CAR_WIDTH - 16, ENEMY_CAR_HEIGHT - 35);
+            
+            // 车灯
+            ctx.fillStyle = '#d63031';
+            ctx.fillRect(car.x + 3, car.y + 2, 10, 6);
+            ctx.fillRect(car.x + ENEMY_CAR_WIDTH - 13, car.y + 2, 10, 6);
+            
+            // 车尾灯
+            ctx.fillStyle = '#fdcb6e';
+            ctx.fillRect(car.x + 3, car.y + ENEMY_CAR_HEIGHT - 6, 8, 4);
+            ctx.fillRect(car.x + ENEMY_CAR_WIDTH - 11, car.y + ENEMY_CAR_HEIGHT - 6, 8, 4);
+            
+            // 轮子
+            ctx.fillStyle = '#2d3436';
+            ctx.fillRect(car.x - 3, car.y + 8, 6, 10);
+            ctx.fillRect(car.x + ENEMY_CAR_WIDTH - 3, car.y + 8, 6, 10);
+            ctx.fillRect(car.x - 3, car.y + ENEMY_CAR_HEIGHT - 18, 6, 10);
+            ctx.fillRect(car.x + ENEMY_CAR_WIDTH - 3, car.y + ENEMY_CAR_HEIGHT - 18, 6, 10);
+            
+            ctx.restore();
+        }
+
+        function spawnEnemyCar() {
+            const lane = Math.floor(Math.random() * LANE_COUNT);
+            const x = lane * LANE_WIDTH + (LANE_WIDTH - ENEMY_CAR_WIDTH) / 2;
+            
+            // 检查该车道是否已有车辆
+            const laneOccupied = enemyCars.some(car => {
+                const carLane = Math.floor(car.x / LANE_WIDTH);
+                return carLane === lane && car.y < ENEMY_CAR_HEIGHT + 50;
+            });
+            
+            if (!laneOccupied) {
+                enemyCars.push({
+                    x: x,
+                    y: -ENEMY_CAR_HEIGHT,
+                    lane: lane,
+                    colorIndex: Math.floor(Math.random() * 5)
+                });
+            }
+        }
+
+        function updateEnemyCars() {
+            enemySpawnTimer++;
+            
+            // 根据速度调整生成间隔（减少车辆密度）
+            const currentInterval = Math.max(45, enemySpawnInterval - Math.floor(currentSpeed));
+            
+            if (enemySpawnTimer >= currentInterval) {
+                spawnEnemyCar();
+                enemySpawnTimer = 0;
+            }
+            
+            // 更新敌车位置
+            for (let i = enemyCars.length - 1; i >= 0; i--) {
+                const car = enemyCars[i];
+                car.y += currentSpeed;
+                
+                // 检查碰撞（放宽判定，增加容错空间）
+                const playerX = playerLane * LANE_WIDTH + (LANE_WIDTH - CAR_WIDTH) / 2;
+                const playerY = canvas.height - CAR_HEIGHT - 20;
+                
+                // 碰撞框缩小，增加容错空间
+                const collisionMargin = 8; // 碰撞边距缩小量
+                const playerBox = {
+                    left: playerX + collisionMargin,
+                    right: playerX + CAR_WIDTH - collisionMargin,
+                    top: playerY + collisionMargin,
+                    bottom: playerY + CAR_HEIGHT - collisionMargin
+                };
+                
+                const enemyBox = {
+                    left: car.x + collisionMargin,
+                    right: car.x + ENEMY_CAR_WIDTH - collisionMargin,
+                    top: car.y + collisionMargin,
+                    bottom: car.y + ENEMY_CAR_HEIGHT - collisionMargin
+                };
+                
+                if (!invincible && 
+                    enemyBox.left < playerBox.right &&
+                    enemyBox.right > playerBox.left &&
+                    enemyBox.top < playerBox.bottom &&
+                    enemyBox.bottom > playerBox.top) {
+                    loseLife();
+                    enemyCars.splice(i, 1);
+                    continue;
+                }
+                
+                // 计分
+                if (car.y > canvas.height) {
+                    score++;
+                    scoreElement.textContent = score;
+                    enemyCars.splice(i, 1);
+                    
+                    // 速度递增
+                    if (score % SPEED_INCREMENT_STEP === 0 && currentSpeed < MAX_SPEED) {
+                        currentSpeed += SPEED_INCREMENT;
+                    }
+                }
+            }
+        }
+
+        function loseLife() {
+            if (invincible) return;
+            
+            lives--;
+            updateHearts();
+            
+            if (lives <= 0) {
+                gameOver = true;
+                if (score > highScore) {
+                    highScore = score;
+                    highScoreElement.textContent = highScore;
+                }
+            } else {
+                invincible = true;
+                
+                if (invincibleTimer) {
+                    clearTimeout(invincibleTimer);
+                }
+                
+                invincibleTimer = setTimeout(() => {
+                    invincible = false;
+                }, 2000);
+            }
+        }
+
+        function drawGameOver() {
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            ctx.fillStyle = '#fff';
+            ctx.font = 'bold 28px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('游戏结束!', canvas.width / 2, canvas.height / 2 - 40);
+            
+            ctx.font = '20px Arial';
+            ctx.fillText('得分: ' + score, canvas.width / 2, canvas.height / 2);
+            
+            ctx.font = '18px Arial';
+            ctx.fillText('最高分: ' + highScore, canvas.width / 2, canvas.height / 2 + 30);
+            
+            ctx.font = '16px Arial';
+            ctx.fillText('点击重新开始', canvas.width / 2, canvas.height / 2 + 70);
+        }
+
+        function drawStartScreen() {
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            ctx.fillStyle = '#fff';
+            ctx.font = 'bold 24px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('赛车游戏', canvas.width / 2, canvas.height / 2 - 50);
+            
+            ctx.font = '16px Arial';
+            ctx.fillText('点击开始游戏', canvas.width / 2, canvas.height / 2 - 10);
+            
+            ctx.font = '14px Arial';
+            ctx.fillStyle = '#ffeaa7';
+            ctx.fillText('电脑端: A/D键或←→键控制', canvas.width / 2, canvas.height / 2 + 30);
+            ctx.fillText('手机端: 左右滑动切换赛道', canvas.width / 2, canvas.height / 2 + 55);
+            
+            ctx.font = '13px Arial';
+            ctx.fillStyle = '#74b9ff';
+            ctx.fillText('你有3颗红心，小心驾驶！', canvas.width / 2, canvas.height / 2 + 85);
+        }
+
+        function gameLoop() {
+            // 更新道路偏移
+            roadOffset += currentSpeed;
+            
+            drawRoad();
+            
+            if (!gameStarted) {
+                drawStartScreen();
+            } else if (gameOver) {
+                enemyCars.forEach(drawEnemyCar);
+                drawPlayerCar();
+                drawGameOver();
+            } else {
+                updateEnemyCars();
+                enemyCars.forEach(drawEnemyCar);
+                drawPlayerCar();
+            }
+            
+            animationId = requestAnimationFrame(gameLoop);
+        }
+
+        function moveLeft() {
+            if (targetLane > 0) {
+                targetLane--;
+            }
+        }
+
+        function moveRight() {
+            if (targetLane < LANE_COUNT - 1) {
+                targetLane++;
+            }
+        }
+
+        function handleInput(action) {
+            if (gameOver) {
+                resetGame();
+                return;
+            }
+            
+            if (!gameStarted) {
+                gameStarted = true;
+                return;
+            }
+            
+            if (action === 'left') {
+                moveLeft();
+            } else if (action === 'right') {
+                moveRight();
+            }
+        }
+
+        // 键盘控制
+        document.addEventListener('keydown', (e) => {
+            if (e.code === 'Space') {
+                e.preventDefault();
+            }
+            
+            if (e.key === 'a' || e.key === 'A' || e.key === 'ArrowLeft') {
+                e.preventDefault();
+                handleInput('left');
+            } else if (e.key === 'd' || e.key === 'D' || e.key === 'ArrowRight') {
+                e.preventDefault();
+                handleInput('right');
+            }
+        });
+
+        // 鼠标点击控制（电脑端）
+        canvas.addEventListener('click', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const scaleX = canvas.width / rect.width;
+            const canvasX = x * scaleX;
+            
+            if (canvasX < canvas.width / 2) {
+                handleInput('left');
+            } else {
+                handleInput('right');
+            }
+        });
+
+        // 触摸滑动控制（移动端）
+        let touchStartX = 0;
+        let touchStartY = 0;
+        let touchStartTime = 0;
+        const SWIPE_THRESHOLD = 30; // 滑动距离阈值
+        const SWIPE_TIME_THRESHOLD = 300; // 滑动时间阈值（毫秒）
+
+        canvas.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            const touch = e.touches[0];
+            touchStartX = touch.clientX;
+            touchStartY = touch.clientY;
+            touchStartTime = Date.now();
+        }, { passive: false });
+
+        canvas.addEventListener('touchmove', (e) => {
+            e.preventDefault(); // 防止页面滚动
+        }, { passive: false });
+
+        canvas.addEventListener('touchend', (e) => {
+            e.preventDefault();
+            const touch = e.changedTouches[0];
+            const touchEndX = touch.clientX;
+            const touchEndY = touch.clientY;
+            const touchEndTime = Date.now();
+            
+            const deltaX = touchEndX - touchStartX;
+            const deltaY = touchEndY - touchStartY;
+            const deltaTime = touchEndTime - touchStartTime;
+            
+            // 检查是否为水平滑动（水平距离大于垂直距离）
+            const isHorizontalSwipe = Math.abs(deltaX) > Math.abs(deltaY);
+            
+            if (isHorizontalSwipe && Math.abs(deltaX) > SWIPE_THRESHOLD && deltaTime < SWIPE_TIME_THRESHOLD) {
+                // 水平滑动，切换赛道
+                if (deltaX > 0) {
+                    // 向右滑动
+                    handleInput('right');
+                } else {
+                    // 向左滑动
+                    handleInput('left');
+                }
+            } else if (Math.abs(deltaX) < SWIPE_THRESHOLD && Math.abs(deltaY) < SWIPE_THRESHOLD) {
+                // 点击（没有滑动或滑动距离很小）
+                const rect = canvas.getBoundingClientRect();
+                const x = touchEndX - rect.left;
+                const scaleX = canvas.width / rect.width;
+                const canvasX = x * scaleX;
+                
+                if (canvasX < canvas.width / 2) {
+                    handleInput('left');
+                } else {
+                    handleInput('right');
+                }
+            }
+        }, { passive: false });
+
+        // 开始游戏循环
+        gameLoop();
+    </script>
+</body>
+</html>
