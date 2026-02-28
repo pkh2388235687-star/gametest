@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>PAN-探索游戏之美</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        .bubble-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .bubble {
+            position: absolute;
+            bottom: -100px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            animation: float linear infinite;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-120vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        .content {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            animation: fadeInDown 1s ease-out;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .title {
+            font-size: clamp(1.5rem, 4vw, 2.5rem);
+            font-weight: bold;
+            color: #fff;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            margin-bottom: 20px;
+            letter-spacing: 2px;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+            animation: fadeInUp 1s ease-out 0.3s both;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .btn {
+            padding: 12px 30px;
+            font-size: 1rem;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-like {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a5a);
+            color: white;
+        }
+
+        .btn-like:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
+        }
+
+        .btn-like:active {
+            transform: translateY(-1px);
+        }
+
+        .btn-share {
+            background: linear-gradient(135deg, #4ecdc4, #44a08d);
+            color: white;
+        }
+
+        .btn-share:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(78, 205, 196, 0.4);
+        }
+
+        .btn-share:active {
+            transform: translateY(-1px);
+        }
+
+        .btn-icon {
+            font-size: 1.2rem;
+        }
+
+        .btn-count {
+            background: rgba(255, 255, 255, 0.3);
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 0.9rem;
+        }
+
+        .game-container {
+            margin: 30px 0;
+            animation: fadeInUp 1s ease-out 0.6s both;
+        }
+
+        .game-title {
+            color: #fff;
+            font-size: clamp(1.2rem, 3vw, 1.8rem);
+            margin-bottom: 15px;
+            text-align: center;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .game-wrapper {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            max-width: 400px;
+            width: 100%;
+        }
+
+        #gameCanvas {
+            display: block;
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            border-radius: 10px;
+            background: #87CEEB;
+            image-rendering: pixelated;
+        }
+
+        .game-info {
+            text-align: center;
+            margin-top: 15px;
+            color: #333;
+        }
+
+        .game-score {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #764ba2;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .score-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .score-label {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .score-value {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #764ba2;
+        }
+
+        .hearts-container {
+            display: flex;
+            justify-content: center;
+            gap: 5px;
+            margin-bottom: 10px;
+        }
+
+        .heart {
+            font-size: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .heart.active {
+            color: #ff4757;
+            text-shadow: 0 0 5px rgba(255, 71, 87, 0.5);
+        }
+
+        .heart.lost {
+            color: #ccc;
+            opacity: 0.5;
+        }
+
+        .game-instructions {
+            font-size: 0.85rem;
+            color: #666;
+            line-height: 1.6;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+
+        .game-instructions strong {
+            color: #667eea;
+        }
+
+        .footer {
+            margin-top: auto;
+            padding: 20px;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.9rem;
+            animation: fadeInUp 1s ease-out 0.9s both;
+        }
+
+        .footer a {
+            color: rgba(255, 255, 255, 0.9);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                padding: 15px;
+            }
+
+            .title {
+                margin-bottom: 15px;
+            }
+
+            .buttons {
+                gap: 15px;
+            }
+
+            .btn {
+                padding: 10px 20px;
+                font-size: 0.9rem;
+            }
+
+            .game-container {
+                margin: 20px 0;
+            }
+
+            .game-wrapper {
+                padding: 15px;
+            }
+
+            .game-score {
+                font-size: 1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .title {
+                font-size: 1.5rem;
+            }
+
+            .buttons {
+                gap: 10px;
+            }
+
+            .btn {
+                padding: 8px 16px;
+                font-size: 0.85rem;
+            }
+
+            .game-instructions {
+                font-size: 0.75rem;
+            }
+
+            .heart {
+                font-size: 1.3rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="bubble-container" id="bubbleContainer"></div>
+    
+    <div class="content">
+        <div class="header">
+            <h1 class="title">PAN-探索游戏之美</h1>
+            <div class="buttons">
+                <button class="btn btn-like" onclick="handleLike()">
+                    <span class="btn-icon">❤️</span>
+                    <span>点赞</span>
+                    <span class="btn-count" id="likeCount">0</span>
+                </button>
+                <button class="btn btn-share" onclick="handleShare()">
+                    <span class="btn-icon">📤</span>
+                    <span>转发</span>
+                    <span class="btn-count" id="shareCount">0</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="game-container">
+            <h2 class="game-title">🐦 水管小鸟像素游戏</h2>
+            <div class="game-wrapper">
+                <canvas id="gameCanvas" width="400" height="400"></canvas>
+                <div class="game-info">
+                    <div class="hearts-container" id="heartsContainer">
+                        <span class="heart active">❤️</span>
+                        <span class="heart active">❤️</span>
+                        <span class="heart active">❤️</span>
+                    </div>
+                    <div class="game-score">
+                        <div class="score-item">
+                            <span class="score-label">得分:</span>
+                            <span class="score-value" id="score">0</span>
+                        </div>
+                        <div class="score-item">
+                            <span class="score-label">最高分:</span>
+                            <span class="score-value" id="highScore">0</span>
+                        </div>
+                    </div>
+                    <div class="game-instructions">
+                        <strong>电脑端:</strong> 按空格键跳跃<br>
+                        <strong>手机端:</strong> 点击屏幕跳跃<br>
+                        <strong>目标:</strong> 避开水管，保护三颗红心，飞得越远越好！
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            © "PAN" - 所有权利保留
+        </div>
+    </div>
+
+    <script>
+        let likeCount = 0;
+        let shareCount = 0;
+        let liked = false;
+        let shared = false;
+
+        function handleLike() {
+            if (!liked) {
+                liked = true;
+                likeCount++;
+                document.getElementById('likeCount').textContent = likeCount;
+                const btn = document.querySelector('.btn-like');
+                btn.style.transform = 'scale(1.1)';
+                setTimeout(() => {
+                    btn.style.transform = 'scale(1)';
+                }, 200);
+            }
+        }
+
+        function handleShare() {
+            if (!shared) {
+                shared = true;
+                shareCount++;
+                document.getElementById('shareCount').textContent = shareCount;
+                const btn = document.querySelector('.btn-share');
+                btn.style.transform = 'scale(1.1)';
+                setTimeout(() => {
+                    btn.style.transform = 'scale(1)';
+                }, 200);
+            }
+
+            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+            
+            if (isMobile) {
+                const shareData = {
+                    title: 'PAN-探索游戏之美',
+                    text: '来玩水管小鸟像素游戏吧！',
+                    url: window.location.href
+                };
+
+                if (navigator.share) {
+                    navigator.share(shareData).catch(err => {
+                        console.log('分享失败:', err);
+                    });
+                } else {
+                    alert('您的浏览器不支持分享功能');
+                }
+            } else {
+                navigator.clipboard.writeText(window.location.href).then(() => {
+                    alert('链接已复制到剪贴板！');
+                }).catch(err => {
+                    console.log('复制失败:', err);
+                    prompt('请复制以下链接:', window.location.href);
+                });
+            }
+        }
+
+        function createBubbles() {
+            const container = document.getElementById('bubbleContainer');
+            const bubbleCount = 20;
+
+            for (let i = 0; i < bubbleCount; i++) {
+                const bubble = document.createElement('div');
+                bubble.className = 'bubble';
+                
+                const size = Math.random() * 60 + 20;
+                const left = Math.random() * 100;
+                const duration = Math.random() * 10 + 10;
+                const delay = Math.random() * 10;
+
+                bubble.style.width = size + 'px';
+                bubble.style.height = size + 'px';
+                bubble.style.left = left + '%';
+                bubble.style.animationDuration = duration + 's';
+                bubble.style.animationDelay = delay + 's';
+
+                container.appendChild(bubble);
+            }
+        }
+
+        createBubbles();
+
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const scoreElement = document.getElementById('score');
+        const highScoreElement = document.getElementById('highScore');
+        const heartsContainer = document.getElementById('heartsContainer');
+
+        const GRAVITY = 0.4;
+        const JUMP_FORCE = -7;
+        const PIPE_SPEED = 2.5;
+        const PIPE_GAP = 120;
+        const PIPE_WIDTH = 50;
+        const PIPE_SPACING = 180;
+
+        let bird = {
+            x: 60,
+            y: 180,
+            width: 35,
+            height: 35,
+            velocity: 0,
+            rotation: 0
+        };
+
+        let pipes = [];
+        let score = 0;
+        let highScore = 0;
+        let lives = 3;
+        let gameOver = false;
+        let gameStarted = false;
+        let animationId;
+        let invincible = false;
+        let invincibleTimer = null;
+
+        function resetGame() {
+            bird = {
+                x: 60,
+                y: 180,
+                width: 35,
+                height: 35,
+                velocity: 0,
+                rotation: 0
+            };
+            pipes = [];
+            score = 0;
+            lives = 3;
+            gameOver = false;
+            gameStarted = false;
+            invincible = false;
+            scoreElement.textContent = score;
+            updateHearts();
+        }
+
+        function updateHearts() {
+            const hearts = heartsContainer.querySelectorAll('.heart');
+            hearts.forEach((heart, index) => {
+                if (index < lives) {
+                    heart.classList.add('active');
+                    heart.classList.remove('lost');
+                } else {
+                    heart.classList.remove('active');
+                    heart.classList.add('lost');
+                }
+            });
+        }
+
+        function drawBird() {
+            ctx.save();
+            ctx.translate(bird.x + bird.width / 2, bird.y + bird.height / 2);
+            ctx.rotate(bird.rotation);
+            
+            if (invincible) {
+                ctx.globalAlpha = 0.5;
+            }
+            
+            ctx.fillStyle = '#FFD700';
+            ctx.fillRect(-bird.width / 2, -bird.height / 2, bird.width, bird.height);
+            
+            ctx.fillStyle = '#FFA500';
+            ctx.fillRect(-bird.width / 2 + 5, -bird.height / 2 + 5, bird.width - 10, bird.height - 10);
+            
+            ctx.fillStyle = '#000';
+            ctx.fillRect(bird.width / 4 - 5, -bird.height / 4, 8, 8);
+            
+            ctx.fillStyle = '#FF6347';
+            ctx.fillRect(bird.width / 2, -2, 8, 4);
+            
+            ctx.fillStyle = '#FFD700';
+            ctx.fillRect(-bird.width / 2 - 3, -bird.height / 4, 5, 10);
+            ctx.fillRect(-bird.width / 2 - 3, bird.height / 4 - 10, 5, 10);
+            
+            ctx.restore();
+        }
+
+        function drawPipe(pipe) {
+            const gradient = ctx.createLinearGradient(pipe.x, 0, pipe.x + PIPE_WIDTH, 0);
+            gradient.addColorStop(0, '#228B22');
+            gradient.addColorStop(0.5, '#32CD32');
+            gradient.addColorStop(1, '#228B22');
+            
+            ctx.fillStyle = gradient;
+            
+            ctx.fillRect(pipe.x, 0, PIPE_WIDTH, pipe.topHeight);
+            ctx.fillRect(pipe.x, pipe.bottomY, PIPE_WIDTH, canvas.height - pipe.bottomY);
+            
+            ctx.fillStyle = '#1a6b1a';
+            ctx.fillRect(pipe.x - 5, pipe.topHeight - 20, PIPE_WIDTH + 10, 20);
+            ctx.fillRect(pipe.x - 5, pipe.bottomY, PIPE_WIDTH + 10, 20);
+        }
+
+        function updateBird() {
+            bird.velocity += GRAVITY;
+            bird.y += bird.velocity;
+            
+            bird.rotation = Math.min(Math.max(bird.velocity * 0.05, -0.5), 0.5);
+            
+            if (bird.y < 0) {
+                bird.y = 0;
+                bird.velocity = 0;
+            }
+            
+            if (bird.y + bird.height > canvas.height) {
+                loseLife();
+            }
+        }
+
+        function loseLife() {
+            if (invincible) return;
+            
+            lives--;
+            updateHearts();
+            
+            if (lives <= 0) {
+                gameOver = true;
+                if (score > highScore) {
+                    highScore = score;
+                    highScoreElement.textContent = highScore;
+                }
+            } else {
+                invincible = true;
+                bird.velocity = JUMP_FORCE;
+                
+                if (invincibleTimer) {
+                    clearTimeout(invincibleTimer);
+                }
+                
+                invincibleTimer = setTimeout(() => {
+                    invincible = false;
+                }, 1500);
+            }
+        }
+
+        function updatePipes() {
+            if (pipes.length === 0 || pipes[pipes.length - 1].x < canvas.width - PIPE_SPACING) {
+                const minHeight = 50;
+                const maxHeight = canvas.height - PIPE_GAP - minHeight;
+                const topHeight = Math.random() * (maxHeight - minHeight) + minHeight;
+                
+                pipes.push({
+                    x: canvas.width,
+                    topHeight: topHeight,
+                    bottomY: topHeight + PIPE_GAP,
+                    passed: false
+                });
+            }
+            
+            pipes.forEach(pipe => {
+                pipe.x -= PIPE_SPEED;
+                
+                if (!pipe.passed && pipe.x + PIPE_WIDTH < bird.x) {
+                    pipe.passed = true;
+                    score++;
+                    scoreElement.textContent = score;
+                }
+                
+                if (checkCollision(pipe)) {
+                    loseLife();
+                }
+            });
+            
+            pipes = pipes.filter(pipe => pipe.x + PIPE_WIDTH > 0);
+        }
+
+        function checkCollision(pipe) {
+            if (invincible) return false;
+            
+            const birdBox = {
+                left: bird.x + 5,
+                right: bird.x + bird.width - 5,
+                top: bird.y + 5,
+                bottom: bird.y + bird.height - 5
+            };
+            
+            const topPipeBox = {
+                left: pipe.x,
+                right: pipe.x + PIPE_WIDTH,
+                top: 0,
+                bottom: pipe.topHeight
+            };
+            
+            const bottomPipeBox = {
+                left: pipe.x,
+                right: pipe.x + PIPE_WIDTH,
+                top: pipe.bottomY,
+                bottom: canvas.height
+            };
+            
+            return (birdBox.right > topPipeBox.left && 
+                    birdBox.left < topPipeBox.right && 
+                    birdBox.bottom > topPipeBox.top && 
+                    birdBox.top < topPipeBox.bottom) ||
+                   (birdBox.right > bottomPipeBox.left && 
+                    birdBox.left < bottomPipeBox.right && 
+                    birdBox.bottom > bottomPipeBox.top && 
+                    birdBox.top < bottomPipeBox.bottom);
+        }
+
+        function drawBackground() {
+            const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+            gradient.addColorStop(0, '#87CEEB');
+            gradient.addColorStop(1, '#E0F6FF');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            ctx.fillStyle = '#90EE90';
+            ctx.fillRect(0, canvas.height - 20, canvas.width, 20);
+        }
+
+        function drawGameOver() {
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            ctx.fillStyle = '#fff';
+            ctx.font = 'bold 28px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('游戏结束!', canvas.width / 2, canvas.height / 2 - 40);
+            
+            ctx.font = '20px Arial';
+            ctx.fillText('得分: ' + score, canvas.width / 2, canvas.height / 2);
+            
+            ctx.font = '18px Arial';
+            ctx.fillText('最高分: ' + highScore, canvas.width / 2, canvas.height / 2 + 30);
+            
+            ctx.font = '16px Arial';
+            ctx.fillText('点击重新开始', canvas.width / 2, canvas.height / 2 + 70);
+        }
+
+        function drawStartScreen() {
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            ctx.fillStyle = '#fff';
+            ctx.font = 'bold 24px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('水管小鸟', canvas.width / 2, canvas.height / 2 - 50);
+            
+            ctx.font = '16px Arial';
+            ctx.fillText('点击开始游戏', canvas.width / 2, canvas.height / 2 - 10);
+            
+            ctx.font = '14px Arial';
+            ctx.fillStyle = '#FFE4B5';
+            ctx.fillText('电脑端: 按空格键跳跃', canvas.width / 2, canvas.height / 2 + 30);
+            ctx.fillText('手机端: 点击屏幕跳跃', canvas.width / 2, canvas.height / 2 + 55);
+            
+            ctx.font = '13px Arial';
+            ctx.fillStyle = '#98FB98';
+            ctx.fillText('你有3颗红心，小心保护！', canvas.width / 2, canvas.height / 2 + 85);
+        }
+
+        function gameLoop() {
+            drawBackground();
+            
+            if (!gameStarted) {
+                drawBird();
+                drawStartScreen();
+            } else if (gameOver) {
+                pipes.forEach(drawPipe);
+                drawBird();
+                drawGameOver();
+            } else {
+                updateBird();
+                updatePipes();
+                pipes.forEach(drawPipe);
+                drawBird();
+            }
+            
+            animationId = requestAnimationFrame(gameLoop);
+        }
+
+        function jump() {
+            if (gameOver) {
+                resetGame();
+                return;
+            }
+            
+            if (!gameStarted) {
+                gameStarted = true;
+            }
+            
+            bird.velocity = JUMP_FORCE;
+        }
+
+        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+        if (!isMobile) {
+            document.addEventListener('keydown', (e) => {
+                if (e.code === 'Space') {
+                    e.preventDefault();
+                    jump();
+                }
+            });
+        }
+
+        canvas.addEventListener('click', jump);
+        canvas.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            jump();
+        });
+
+        gameLoop();
+    </script>
+</body>
+</html>
